@@ -4,24 +4,30 @@
   <meta charset="UTF-8">
   <title>Custom Controller Project</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background: #0f0f0f;
       color: #fff;
-      text-align: center;
     }
 
     .container {
-      max-width: 800px;
+      max-width: 900px;
       margin: auto;
       padding: 60px 20px;
+      text-align: center;
     }
 
     h1 {
-      font-size: 36px;
-      margin-bottom: 20px;
+      font-size: 42px;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      margin-top: 60px;
+      font-size: 26px;
     }
 
     p {
@@ -44,10 +50,23 @@
       font-weight: bold;
     }
 
-    a.button.secondary {
+    a.secondary {
       background: transparent;
       border: 1px solid #fff;
       color: #fff;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .card {
+      background: #1a1a1a;
+      padding: 20px;
+      border-radius: 12px;
     }
 
     footer {
@@ -59,13 +78,14 @@
 </head>
 
 <body>
+
   <div class="container">
     <h1>Custom Clone Hero Controller</h1>
 
     <p>
       Fan-made 3D printable controller project.<br>
-      Built through multiple iterations, combining mechanical design,
-      PCB development, and firmware integration.
+      Built through multiple iterations combining mechanical design,
+      PCB development, and firmware.
     </p>
 
     <div class="buttons">
@@ -78,12 +98,40 @@
       </a>
     </div>
 
+    <h2>Project Overview</h2>
+
+    <div class="cards">
+      <div class="card">
+        <h3>3D Printable Design</h3>
+        <p>STL files for building your own controller.</p>
+      </div>
+
+      <div class="card">
+        <h3>PCB + Firmware</h3>
+        <p>Hardware and firmware available on GitHub.</p>
+      </div>
+
+      <div class="card">
+        <h3>Assembly Guide</h3>
+        <p>Step-by-step instructions and troubleshooting.</p>
+      </div>
+    </div>
+
+    <h2>Links</h2>
+
+    <p>
+      Watch the controller in action:<br>
+      <a href="PUT_YOUR_VIDEO_LINK_HERE" target="_blank">Video</a>
+    </p>
+
     <footer>
       <p>
-        Unofficial fan-made project.<br>
-        All trademarks belong to their respective owners.
+        This is an unofficial fan-made project.<br>
+        All trademarks belong to their respective owners.<br><br>
+        © 2026 Your Name
       </p>
     </footer>
   </div>
+
 </body>
 </html>
