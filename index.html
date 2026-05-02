@@ -1,137 +1,790 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Custom Controller Project</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+from pathlib import Path
+import zipfile
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0f0f0f;
-      color: #fff;
-    }
+base = Path("/mnt/data/alshochat-site-files")
+(base / "src/components/site").mkdir(parents=True, exist_ok=True)
+(base / "src/data").mkdir(parents=True, exist_ok=True)
+(base / "src/pages").mkdir(parents=True, exist_ok=True)
+(base / "public/projects").mkdir(parents=True, exist_ok=True)
+(base / "public/hero").mkdir(parents=True, exist_ok=True)
 
-    .container {
-      max-width: 900px;
-      margin: auto;
-      padding: 60px 20px;
-      text-align: center;
-    }
+files = {}
 
-    h1 {
-      font-size: 42px;
-      margin-bottom: 10px;
-    }
+files["src/pages/Index.tsx"] = r'''import { Navbar } from "@/components/site/Navbar";
+import { Hero } from "@/components/site/Hero";
+import { FeaturedBuilds } from "@/components/site/FeaturedBuilds";
+import { Capabilities } from "@/components/site/Capabilities";
+import { ProjectCatalog } from "@/components/site/ProjectCatalog";
+import { OpenResources } from "@/components/site/OpenResources";
+import { AboutMaker } from "@/components/site/AboutMaker";
+import { Footer } from "@/components/site/Footer";
 
-    h2 {
-      margin-top: 60px;
-      font-size: 26px;
-    }
-
-    p {
-      color: #ccc;
-      line-height: 1.6;
-    }
-
-    .buttons {
-      margin-top: 30px;
-    }
-
-    a.button {
-      display: inline-block;
-      margin: 10px;
-      padding: 12px 20px;
-      background: #fff;
-      color: #000;
-      text-decoration: none;
-      border-radius: 8px;
-      font-weight: bold;
-    }
-
-    a.secondary {
-      background: transparent;
-      border: 1px solid #fff;
-      color: #fff;
-    }
-
-    .cards {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 20px;
-      margin-top: 30px;
-    }
-
-    .card {
-      background: #1a1a1a;
-      padding: 20px;
-      border-radius: 12px;
-    }
-
-    footer {
-      margin-top: 60px;
-      font-size: 12px;
-      color: #777;
-    }
-  </style>
-</head>
-
-<body>
-
-  <div class="container">
-    <h1>Custom Clone Hero Controller</h1>
-
-    <p>
-      Fan-made 3D printable controller project.<br>
-      Built through multiple iterations combining mechanical design,
-      PCB development, and firmware.
-    </p>
-
-    <div class="buttons">
-      <a class="button" href="PUT_YOUR_CULTS_LINK_HERE" target="_blank">
-        Get STL Files
-      </a>
-
-      <a class="button secondary" href="PUT_YOUR_GITHUB_LINK_HERE" target="_blank">
-        View FW & PCB
-      </a>
+const Index = () => {
+  return (
+    <div className="min-h-screen bg-[#0b0c10] text-white">
+      <Navbar />
+      <main>
+        <Hero />
+        <FeaturedBuilds />
+        <Capabilities />
+        <ProjectCatalog />
+        <OpenResources />
+        <AboutMaker />
+      </main>
+      <Footer />
     </div>
+  );
+};
 
-    <h2>Project Overview</h2>
+export default Index;
+'''
 
-    <div class="cards">
-      <div class="card">
-        <h3>3D Printable Design</h3>
-        <p>STL files for building your own controller.</p>
+files["src/data/projects.ts"] = r'''export type ProjectStatus =
+  | "paid"
+  | "free"
+  | "coming-soon"
+  | "open-source"
+  | "in-progress";
+
+export type ProjectCategory =
+  | "controller"
+  | "keyboard"
+  | "home"
+  | "games"
+  | "electronics"
+  | "prototype";
+
+export type Project = {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  longDescription: string;
+  image: string;
+  gallery?: string[];
+  category: ProjectCategory;
+  status: ProjectStatus;
+  statusLabel: string;
+  price?: string;
+  buttonLabel: string;
+  tags: string[];
+  filesIncluded?: string[];
+  separatePartsNote?: string;
+  buyUrl?: string;
+  githubUrl?: string;
+  docsUrl?: string;
+};
+
+export const projects: Project[] = [
+  {
+    id: "clone-hero-guitar-controller",
+    title: "Clone Hero Guitar Controller",
+    subtitle: "STL files for a custom rhythm game controller.",
+    description:
+      "A custom guitar-style rhythm game controller built with 3D printing, electronics, PCB design, firmware, and hands-on assembly.",
+    longDescription:
+      "A complete STL file set for 3D printing a custom guitar-style controller for Clone Hero. This is a digital download only. No physical controller is included. PCB files, firmware, Gerbers, assembly notes, and a parts list are available for free on GitHub.",
+    image: "/projects/clone-hero-controller.jpg",
+    category: "controller",
+    status: "paid",
+    statusLabel: "$30",
+    price: "$30",
+    buttonLabel: "Buy STL",
+    tags: ["STL", "Electronics", "Open Source", "Controller"],
+    filesIncluded: [
+      "STL files for 3D printing",
+      "README.txt",
+      "LICENSE.txt",
+    ],
+    separatePartsNote:
+      "Electronics, hardware, PCB, and other purchased parts are listed in the free assembly documentation with relevant links.",
+    buyUrl: "https://cults3d.com/",
+    githubUrl:
+      "https://github.com/Alshochat/Cloneshochat--Clone-Hero-Controller",
+  },
+  {
+    id: "custom-mechanical-keyboard",
+    title: "Custom Mechanical Keyboard",
+    subtitle: "A documented custom keyboard build.",
+    description:
+      "A custom keyboard build focused on layout, enclosure design, switches, electronics, and clean documentation.",
+    longDescription:
+      "A custom mechanical keyboard project that explores layout, enclosure design, switches, electronics, assembly, and documentation.",
+    image: "/projects/custom-keyboard.jpg",
+    category: "keyboard",
+    status: "coming-soon",
+    statusLabel: "COMING SOON",
+    buttonLabel: "Preview",
+    tags: ["Keyboard", "CAD", "Electronics"],
+  },
+  {
+    id: "bottle-opener-coasters",
+    title: "Bottle Opener Coasters",
+    subtitle: "Printable coasters with an integrated bottle opener.",
+    description:
+      "Printable drink coasters with an integrated bottle opener, designed as a useful everyday object with a maker twist.",
+    longDescription:
+      "A practical 3D printable home object that combines drink coasters with a built-in bottle opener concept.",
+    image: "/projects/bottle-opener-coasters.jpg",
+    category: "home",
+    status: "free",
+    statusLabel: "FREE",
+    buttonLabel: "Download",
+    tags: ["STL", "Home", "Utility"],
+  },
+  {
+    id: "magnetic-fridge-chess",
+    title: "Magnetic Fridge Chess",
+    subtitle: "A magnetic chess board for the fridge.",
+    description:
+      "A magnetic chess board designed for the fridge, turning a kitchen surface into a playful ongoing game.",
+    longDescription:
+      "A playful home project that uses magnets and printable pieces to turn a fridge into a shared chess board.",
+    image: "/projects/magnetic-fridge-chess.jpg",
+    category: "games",
+    status: "in-progress",
+    statusLabel: "IN PROGRESS",
+    buttonLabel: "Preview",
+    tags: ["Games", "Magnets", "3D Printing"],
+  },
+  {
+    id: "pcb-electronics-experiments",
+    title: "PCB & Electronics Experiments",
+    subtitle: "Small hardware experiments and test builds.",
+    description:
+      "Small hardware experiments involving PCB design, components, testing, and practical assembly constraints.",
+    longDescription:
+      "A collection of electronics experiments and prototypes focused on learning, testing, and making small hardware ideas real.",
+    image: "/projects/pcb-experiments.jpg",
+    category: "electronics",
+    status: "open-source",
+    statusLabel: "OPEN SOURCE",
+    buttonLabel: "View GitHub",
+    tags: ["PCB", "Firmware", "Testing"],
+    githubUrl: "https://github.com/Alshochat",
+  },
+  {
+    id: "workshop-prototypes",
+    title: "Workshop Prototypes",
+    subtitle: "Ideas, tests, and one-off builds.",
+    description:
+      "Ideas, tests, and one-off builds that explore useful objects, mechanisms, and printable forms.",
+    longDescription:
+      "A place for unfinished ideas, one-off prototypes, design tests, and workshop experiments that may become polished projects later.",
+    image: "/projects/workshop-prototypes.jpg",
+    category: "prototype",
+    status: "in-progress",
+    statusLabel: "IN PROGRESS",
+    buttonLabel: "View Project",
+    tags: ["Prototype", "Workshop", "Experiments"],
+  },
+];
+
+export const featuredProjects = projects.slice(0, 6);
+'''
+
+files["src/components/site/Navbar.tsx"] = r'''const navItems = [
+  { label: "HOME", href: "#home" },
+  { label: "GITHUB", href: "https://github.com/Alshochat" },
+  { label: "PRINTABLES", href: "#projects" },
+  { label: "CULTS3D", href: "https://cults3d.com/" },
+  { label: "BLOG", href: "#about" },
+  { label: "CONTACT", href: "mailto:alshochat.assaf@gmail.com" },
+];
+
+export const Navbar = () => {
+  return (
+    <header className="sticky top-0 z-50 border-b border-white/5 bg-[#0b0c10]/80 backdrop-blur-xl">
+      <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-5">
+        <a href="#home" className="flex items-center gap-2 text-xs font-semibold tracking-wide">
+          <span className="grid h-5 w-5 place-items-center rounded-full bg-gradient-to-br from-cyan-400 via-fuchsia-500 to-violet-600 text-[10px]">
+            A
+          </span>
+          <span>Alshochat 3D</span>
+        </a>
+
+        <div className="hidden items-center gap-9 md:flex">
+          {navItems.map((item) => (
+            <a
+              key={item.label}
+              href={item.href}
+              className="text-[11px] font-semibold tracking-[0.16em] text-white/80 transition hover:text-cyan-300"
+            >
+              {item.label}
+            </a>
+          ))}
+        </div>
+
+        <a
+          href="#projects"
+          className="rounded-full border border-fuchsia-500/70 px-6 py-2 text-[11px] font-semibold text-fuchsia-300 transition hover:bg-fuchsia-500 hover:text-white"
+        >
+          Shop Designs
+        </a>
+      </nav>
+    </header>
+  );
+};
+'''
+
+files["src/components/site/Hero.tsx"] = r'''export const Hero = () => {
+  return (
+    <section id="home" className="relative overflow-hidden px-5 pt-20 pb-24">
+      <div className="absolute left-1/2 top-24 h-72 w-72 -translate-x-1/2 rounded-full bg-cyan-500/10 blur-3xl" />
+      <div className="absolute right-1/4 top-44 h-72 w-72 rounded-full bg-fuchsia-500/10 blur-3xl" />
+
+      <div className="relative mx-auto flex max-w-5xl flex-col items-center text-center">
+        <div className="mb-16 w-full max-w-3xl overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-2xl shadow-fuchsia-500/10">
+          <img
+            src="/hero/hero-build.jpg"
+            alt="Featured maker project"
+            className="h-[260px] w-full object-cover"
+          />
+        </div>
+
+        <h1 className="font-mono text-5xl font-black uppercase leading-[0.95] tracking-tight text-cyan-300 md:text-7xl">
+          Useful, weird,
+          <br />
+          and buildable.
+        </h1>
+
+        <p className="mt-10 max-w-4xl font-mono text-lg uppercase leading-relaxed tracking-[0.28em] text-cyan-100/90 md:text-xl">
+          A growing collection of 3D printable files, DIY hardware builds, and maker
+          experiments, designed to be built, modified, and made real.
+        </p>
+
+        <div className="mt-16 flex flex-wrap justify-center gap-4">
+          <a
+            href="#projects"
+            className="rounded-full bg-fuchsia-500 px-12 py-3 text-sm font-semibold text-white shadow-lg shadow-fuchsia-500/30 transition hover:bg-fuchsia-400"
+          >
+            Browse Projects
+          </a>
+          <a
+            href="https://github.com/Alshochat"
+            className="rounded-full border border-white/15 px-12 py-3 text-sm font-semibold text-white/90 transition hover:border-cyan-300 hover:text-cyan-300"
+          >
+            View GitHub
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+};
+'''
+
+files["src/components/site/FeaturedBuilds.tsx"] = r'''import { featuredProjects } from "@/data/projects";
+
+export const FeaturedBuilds = () => {
+  return (
+    <section id="featured" className="px-5 py-16">
+      <div className="mx-auto max-w-7xl">
+        <h2 className="mb-8 font-mono text-5xl font-black tracking-tight text-white/75 md:text-6xl">
+          Featured Builds
+        </h2>
+
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {featuredProjects.map((project, index) => (
+            <article key={project.id} className="group">
+              <div className="overflow-hidden border border-white/10 bg-white/5">
+                <img
+                  src={project.image}
+                  alt={project.title}
+                  className="h-52 w-full object-cover transition duration-500 group-hover:scale-105"
+                />
+              </div>
+
+              <div className="mt-3 flex items-start justify-between gap-4">
+                <h3 className="font-mono text-xl font-black text-white/80">
+                  {String(index + 1).padStart(2, "0")} {project.title}
+                </h3>
+                <span className="font-mono text-xl font-black text-white/70">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+              </div>
+
+              <p className="mt-4 text-sm leading-6 text-white/55">
+                {project.description}
+              </p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+'''
+
+files["src/components/site/Capabilities.tsx"] = r'''const capabilities = [
+  {
+    title: "CAD & 3D Design",
+    text: "Designing printable parts, enclosures, mechanisms, and objects that can be built in the real world.",
+  },
+  {
+    title: "Electronics & PCB",
+    text: "Working with circuits, PCB files, Gerbers, components, and practical assembly constraints.",
+  },
+  {
+    title: "Firmware & Prototyping",
+    text: "Turning hardware into working devices through testing, iteration, and hands-on debugging.",
+  },
+  {
+    title: "Documentation",
+    text: "Writing instructions, organizing files, and making projects understandable for other builders.",
+  },
+];
+
+export const Capabilities = () => {
+  return (
+    <section className="px-5 py-24">
+      <div className="mx-auto max-w-7xl">
+        <div className="mx-auto max-w-3xl text-center">
+          <div className="mb-4 text-xs font-bold uppercase tracking-[0.28em] text-fuchsia-400">
+            How I Build
+          </div>
+          <h2 className="font-mono text-4xl font-black leading-tight text-white md:text-6xl">
+            Not just files.
+            <br />
+            Complete builds.
+          </h2>
+          <p className="mt-6 text-base leading-8 text-white/60">
+            Some projects are simple print-ready objects. Others combine CAD, 3D printing,
+            electronics, PCB design, firmware, testing, documentation, and product thinking.
+          </p>
+        </div>
+
+        <div className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+          {capabilities.map((item) => (
+            <div
+              key={item.title}
+              className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 transition hover:border-cyan-300/50 hover:bg-cyan-300/[0.04]"
+            >
+              <h3 className="font-mono text-xl font-black text-cyan-200">
+                {item.title}
+              </h3>
+              <p className="mt-4 text-sm leading-7 text-white/55">{item.text}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+'''
+
+files["src/components/site/ProjectCard.tsx"] = r'''import { Project } from "@/data/projects";
+
+type ProjectCardProps = {
+  project: Project;
+  onOpen: (project: Project) => void;
+};
+
+const statusClasses: Record<Project["status"], string> = {
+  paid: "bg-fuchsia-500 text-white",
+  free: "bg-cyan-300 text-black",
+  "coming-soon": "bg-white/10 text-white",
+  "open-source": "bg-emerald-300 text-black",
+  "in-progress": "bg-violet-400 text-white",
+};
+
+export const ProjectCard = ({ project, onOpen }: ProjectCardProps) => {
+  return (
+    <article className="group min-w-[210px] overflow-hidden rounded-xl bg-[#17181d]">
+      <button
+        type="button"
+        onClick={() => onOpen(project)}
+        className="block w-full text-left"
+      >
+        <div className="aspect-square overflow-hidden bg-white">
+          <img
+            src={project.image}
+            alt={project.title}
+            className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+          />
+        </div>
+
+        <div className="space-y-3 p-4">
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-[11px] font-bold text-fuchsia-400">
+              {project.statusLabel}
+            </span>
+            <span
+              className={`rounded-full px-3 py-1 text-[10px] font-black uppercase ${statusClasses[project.status]}`}
+            >
+              {project.buttonLabel}
+            </span>
+          </div>
+
+          <h3 className="line-clamp-2 text-sm font-bold text-white">
+            {project.title}
+          </h3>
+
+          <p className="line-clamp-2 text-xs leading-5 text-white/50">
+            {project.subtitle}
+          </p>
+
+          <div className="flex flex-wrap gap-1">
+            {project.tags.slice(0, 3).map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full border border-white/10 px-2 py-1 text-[10px] text-white/50"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+      </button>
+    </article>
+  );
+};
+'''
+
+files["src/components/site/ProjectCatalog.tsx"] = r'''import { useMemo, useState } from "react";
+import { Project, projects } from "@/data/projects";
+import { ProjectCard } from "@/components/site/ProjectCard";
+import { ProjectDialog } from "@/components/site/ProjectDialog";
+
+const filters = [
+  { label: "All", value: "all" },
+  { label: "Paid", value: "paid" },
+  { label: "Free", value: "free" },
+  { label: "Open Source", value: "open-source" },
+  { label: "Coming Soon", value: "coming-soon" },
+  { label: "In Progress", value: "in-progress" },
+] as const;
+
+type FilterValue = (typeof filters)[number]["value"];
+
+export const ProjectCatalog = () => {
+  const [active, setActive] = useState<Project | null>(null);
+  const [filter, setFilter] = useState<FilterValue>("all");
+
+  const filteredProjects = useMemo(() => {
+    if (filter === "all") return projects;
+    return projects.filter((project) => project.status === filter);
+  }, [filter]);
+
+  return (
+    <section id="projects" className="px-5 py-20">
+      <div className="mx-auto max-w-7xl">
+        <div className="mx-auto mb-10 max-w-3xl text-center">
+          <h2 className="font-mono text-4xl font-black text-white md:text-5xl">
+            Projects & Printables
+          </h2>
+          <p className="mt-4 text-base leading-7 text-white/65">
+            Browse digital downloads, free resources, and documented maker projects from the workshop.
+          </p>
+        </div>
+
+        <div className="mb-8 flex flex-wrap justify-center gap-3">
+          {filters.map((item) => (
+            <button
+              key={item.value}
+              type="button"
+              onClick={() => setFilter(item.value)}
+              className={`rounded-full border px-4 py-2 text-xs font-bold uppercase tracking-wide transition ${
+                filter === item.value
+                  ? "border-fuchsia-500 bg-fuchsia-500 text-white"
+                  : "border-white/10 text-white/60 hover:border-cyan-300 hover:text-cyan-300"
+              }`}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex gap-5 overflow-x-auto rounded-xl bg-white/[0.04] p-4 pb-6">
+          {filteredProjects.map((project) => (
+            <ProjectCard key={project.id} project={project} onOpen={setActive} />
+          ))}
+        </div>
+
+        <p className="mt-6 text-center text-xs text-white/45">
+          All products are digital downloads only. No physical items are shipped unless stated otherwise.
+        </p>
       </div>
 
-      <div class="card">
-        <h3>PCB + Firmware</h3>
-        <p>Hardware and firmware available on GitHub.</p>
-      </div>
+      <ProjectDialog project={active} onClose={() => setActive(null)} />
+    </section>
+  );
+};
+'''
 
-      <div class="card">
-        <h3>Assembly Guide</h3>
-        <p>Step-by-step instructions and troubleshooting.</p>
+files["src/components/site/ProjectDialog.tsx"] = r'''import { Project } from "@/data/projects";
+
+type ProjectDialogProps = {
+  project: Project | null;
+  onClose: () => void;
+};
+
+const getActionUrl = (project: Project) => {
+  return project.buyUrl || project.githubUrl || project.docsUrl || "#projects";
+};
+
+export const ProjectDialog = ({ project, onClose }: ProjectDialogProps) => {
+  if (!project) return null;
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 p-5 backdrop-blur-sm">
+      <div className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-3xl border border-white/10 bg-[#111217] shadow-2xl">
+        <div className="grid md:grid-cols-[0.95fr_1.05fr]">
+          <div className="bg-white">
+            <img
+              src={project.image}
+              alt={project.title}
+              className="h-full min-h-[320px] w-full object-cover"
+            />
+          </div>
+
+          <div className="p-7 md:p-9">
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <span className="rounded-full bg-fuchsia-500 px-4 py-1 text-xs font-black uppercase text-white">
+                {project.statusLabel}
+              </span>
+              <button
+                type="button"
+                onClick={onClose}
+                className="grid h-9 w-9 place-items-center rounded-full border border-white/10 text-white/70 transition hover:border-white/30 hover:text-white"
+                aria-label="Close dialog"
+              >
+                ×
+              </button>
+            </div>
+
+            <h2 className="font-mono text-3xl font-black leading-tight text-white md:text-4xl">
+              {project.title}
+            </h2>
+
+            <p className="mt-4 text-base leading-8 text-white/65">
+              {project.longDescription}
+            </p>
+
+            {project.filesIncluded?.length ? (
+              <div className="mt-7 rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+                <h3 className="font-mono text-lg font-black text-cyan-200">
+                  Included
+                </h3>
+                <ul className="mt-3 space-y-2 text-sm text-white/60">
+                  {project.filesIncluded.map((item) => (
+                    <li key={item}>• {item}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+
+            {project.separatePartsNote ? (
+              <p className="mt-5 rounded-2xl border border-cyan-300/20 bg-cyan-300/5 p-4 text-sm leading-6 text-cyan-100/75">
+                {project.separatePartsNote}
+              </p>
+            ) : null}
+
+            <div className="mt-7 flex flex-wrap gap-2">
+              {project.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-full border border-white/10 px-3 py-1 text-xs text-white/55"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              <a
+                href={getActionUrl(project)}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-full bg-fuchsia-500 px-7 py-3 text-sm font-bold text-white transition hover:bg-fuchsia-400"
+              >
+                {project.buttonLabel}
+              </a>
+
+              {project.githubUrl ? (
+                <a
+                  href={project.githubUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded-full border border-white/15 px-7 py-3 text-sm font-bold text-white/80 transition hover:border-cyan-300 hover:text-cyan-300"
+                >
+                  GitHub
+                </a>
+              ) : null}
+
+              {project.docsUrl ? (
+                <a
+                  href={project.docsUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded-full border border-white/15 px-7 py-3 text-sm font-bold text-white/80 transition hover:border-cyan-300 hover:text-cyan-300"
+                >
+                  Docs
+                </a>
+              ) : null}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+  );
+};
+'''
 
-    <h2>Links</h2>
+files["src/components/site/OpenResources.tsx"] = r'''export const OpenResources = () => {
+  return (
+    <section id="open-source" className="px-5 py-24">
+      <div className="mx-auto grid max-w-6xl gap-10 md:grid-cols-[1.2fr_0.8fr] md:items-center">
+        <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+          <img
+            src="/projects/open-build-resources.jpg"
+            alt="Open build resources"
+            className="h-[360px] w-full object-cover"
+          />
+        </div>
 
-    <p>
-      Watch the controller in action:<br>
-      <a href="PUT_YOUR_VIDEO_LINK_HERE" target="_blank">Video</a>
-    </p>
+        <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-9">
+          <h2 className="font-mono text-3xl font-black leading-tight text-white md:text-4xl">
+            Open Build
+            <br />
+            Resources
+          </h2>
+          <p className="mt-8 text-sm leading-7 text-white/55">
+            Some projects include free supporting files like PCB designs, firmware,
+            Gerbers, assembly notes, and parts lists, so builders can understand the
+            full process.
+          </p>
+          <a
+            href="https://github.com/Alshochat"
+            target="_blank"
+            rel="noreferrer"
+            className="mt-10 inline-block text-sm font-bold text-fuchsia-400 underline-offset-4 hover:underline"
+          >
+            View GitHub
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+};
+'''
 
-    <footer>
-      <p>
-        This is an unofficial fan-made project.<br>
-        All trademarks belong to their respective owners.<br><br>
-        © 2026 Your Name
-      </p>
+files["src/components/site/AboutMaker.tsx"] = r'''export const AboutMaker = () => {
+  return (
+    <section id="about" className="px-5 py-20">
+      <div className="mx-auto max-w-4xl rounded-3xl border border-white/10 bg-white/[0.03] p-8 text-center md:p-12">
+        <div className="mb-4 text-xs font-bold uppercase tracking-[0.28em] text-cyan-300">
+          About
+        </div>
+        <h2 className="font-mono text-3xl font-black leading-tight text-white md:text-5xl">
+          Built by a maker who likes turning ideas into objects.
+        </h2>
+        <p className="mt-7 text-base leading-8 text-white/60">
+          Alshochat 3D is my workshop for practical, playful, and sometimes unusual
+          projects. I design and build with 3D printing, CAD, electronics, PCB design,
+          firmware, and hands-on prototyping.
+        </p>
+        <div className="mt-9 flex flex-wrap justify-center gap-4">
+          <a
+            href="https://github.com/Alshochat"
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-full bg-fuchsia-500 px-8 py-3 text-sm font-bold text-white transition hover:bg-fuchsia-400"
+          >
+            View GitHub
+          </a>
+          <a
+            href="mailto:alshochat.assaf@gmail.com"
+            className="rounded-full border border-white/15 px-8 py-3 text-sm font-bold text-white/80 transition hover:border-cyan-300 hover:text-cyan-300"
+          >
+            Contact
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+};
+'''
+
+files["src/components/site/Footer.tsx"] = r'''export const Footer = () => {
+  return (
+    <footer className="px-5 pt-20 pb-10">
+      <div className="mx-auto max-w-7xl">
+        <div className="flex flex-col items-center justify-between gap-8 md:flex-row">
+          <a href="#home" className="flex items-center gap-2 text-xs font-semibold">
+            <span className="grid h-5 w-5 place-items-center rounded-full bg-gradient-to-br from-cyan-400 via-fuchsia-500 to-violet-600 text-[10px]">
+              A
+            </span>
+            <span>Alshochat 3D</span>
+          </a>
+
+          <a
+            href="mailto:alshochat.assaf@gmail.com"
+            className="text-xs uppercase tracking-[0.16em] text-white/55 hover:text-cyan-300"
+          >
+            alshochat.assaf@gmail.com
+          </a>
+
+          <div className="flex items-center gap-4 text-xs text-white/55">
+            <a href="https://github.com/Alshochat" target="_blank" rel="noreferrer" className="hover:text-cyan-300">
+              GitHub
+            </a>
+            <a href="https://cults3d.com/" target="_blank" rel="noreferrer" className="hover:text-cyan-300">
+              Cults3D
+            </a>
+            <a href="#projects" className="hover:text-cyan-300">
+              Printables
+            </a>
+          </div>
+        </div>
+
+        <div className="mt-16 border-t border-cyan-300/25 pt-8 text-center">
+          <p className="text-[11px] uppercase tracking-[0.14em] text-white/45">
+            Digital downloads only. No physical products are shipped unless stated otherwise.
+          </p>
+          <p className="mt-5 text-[11px] uppercase tracking-[0.14em] text-white/35">
+            © 2026 Alshochat 3D. All rights reserved.
+          </p>
+        </div>
+      </div>
     </footer>
-  </div>
+  );
+};
+'''
 
-</body>
-</html>
+files["README.md"] = r'''# Alshochat site files
+
+These files turn the Wix visual direction into React + TypeScript + Tailwind components.
+
+## Where to put files
+
+Copy the folders into your project:
+
+```txt
+src/
+  pages/
+    Index.tsx
+  components/
+    site/
+      Navbar.tsx
+      Hero.tsx
+      FeaturedBuilds.tsx
+      Capabilities.tsx
+      ProjectCatalog.tsx
+      ProjectCard.tsx
+      ProjectDialog.tsx
+      OpenResources.tsx
+      AboutMaker.tsx
+      Footer.tsx
+  data/
+    projects.ts
+public/
+  hero/
+    hero-build.jpg
+  projects/
+    clone-hero-controller.jpg
+    custom-keyboard.jpg
+    bottle-opener-coasters.jpg
+    magnetic-fridge-chess.jpg
+    pcb-experiments.jpg
+    workshop-prototypes.jpg
+    open-build-resources.jpg
